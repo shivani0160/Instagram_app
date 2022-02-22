@@ -15,32 +15,57 @@ public class PostsController {
 
     //http://localhost:8080/posts
     @GetMapping("/posts")
-    public List<Post> getAllPosts(){
-      return repository.findAll();
+    public List<Post> getAllPosts() {
+        return repository.findAll();
     }
 
     @GetMapping("/posts/{id}")
-    public Post getPostDetails(@PathVariable long id){
+    public Post getPostDetails(@PathVariable long id) {
         Optional<Post> post = repository.findById(id);
+            if(id<=0) {
+                throw new RuntimeException("Invalid address, please enter positive id");
+            }
         if (post.isPresent()){
-            return new Post();}
-        else {
-            throw new RuntimeException("Post not found with id"+ id);
-
+            return new Post();
+        } else {
+            throw new RuntimeException("Post not found with id" + id);
         }
     }
 
     @PostMapping("/posts")
-    public  void createPost(@RequestBody Post post){
+    public void createPost(@RequestBody Post post) {
+
         repository.save(post);
-     }
-    @PutMapping("/posts/{id}")
-    public void updatePost(@PathVariable long id, @RequestBody Post post){
-        repository.save(post);
-    }
-    @DeleteMapping("/posts/{id}")
-    public void deletePost(@PathVariable long id){
-        repository.deleteById(id);
     }
 
+    @PutMapping("/posts/{id}")
+    public void updatePost(@PathVariable long id, @RequestBody Post post) {
+        try {
+            if (id<=0) {
+                throw new RuntimeException("Invalid address, please enter positive id");
+            }
+            else {
+                repository.save(post);
+            }
+        } catch (ArithmeticException e){
+            if (getPostDetails(id) == null)
+
+             throw new RuntimeException(" Post not found with id " + id);
+        }
+    }
+
+    @DeleteMapping("/posts/{id}")
+    public void deletePost(@PathVariable long id) {
+        try {
+            if (getPostDetails(id) == null)
+                throw new RuntimeException(" Post not found with id " + id);
+
+        } catch (ArithmeticException e) {
+            System.out.println("Printing stack trace...");
+            e.printStackTrace(); // prints the stack trace
+        }
+        repository.deleteById(id);
+
+
+    }
 }

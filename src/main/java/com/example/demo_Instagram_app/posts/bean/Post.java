@@ -15,6 +15,7 @@ public class Post {
     }
 
     public Post (long id, String message) {
+
         this.id = id;
         this.message = message;
 
@@ -33,4 +34,5 @@ public class Post {
     public String toString() {
         return "Post{" + "id=" + id + ", message='" + message + '\'' + '}';
     }
+
 }

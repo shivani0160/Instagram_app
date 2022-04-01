@@ -20,13 +20,19 @@ public class PostsController {
     }
 
     @GetMapping("/posts/{id}")
-    public Post getPostDetails(@PathVariable long id) {
-        Optional<Post> post = repository.findById(id);
-            if(id<=0) {
-                throw new RuntimeException("Invalid address, please enter positive id");
-            }
-        if (post.isPresent()){
-            return new Post();
+    public Post getPostDetails(@PathVariable String id) {
+        Long ID = 0L;
+        try {
+            ID = Long.parseLong(id);
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+        Optional<Post> post = repository.findById(ID);
+        if (ID <= 0) {
+            throw new RuntimeException("Invalid address, please enter positive id");
+        }
+        else if (post.isPresent()) {
+            return  post.get();
         } else {
             throw new RuntimeException("Post not found with id" + id);
         }
@@ -39,33 +45,39 @@ public class PostsController {
     }
 
     @PutMapping("/posts/{id}")
-    public void updatePost(@PathVariable long id, @RequestBody Post post) {
+    public void updatePost(@PathVariable String id, @RequestBody Post post) {
+        Long ID = 0L;
         try {
-            if (id<=0) {
-                throw new RuntimeException("Invalid address, please enter positive id");
-            }
-            else {
-                repository.save(post);
-            }
-        } catch (ArithmeticException e){
-            if (getPostDetails(id) == null)
-
-             throw new RuntimeException(" Post not found with id " + id);
+            ID = Long.parseLong(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid input, added value is a string please enter positive integer");
         }
+        post.setId(ID);
+        if (ID <= 0)
+            throw new RuntimeException("Invalid address, please enter positive id");
+
+        else if (getPostDetails(id) == null)
+            throw new RuntimeException("Post not found with id " + id);
+        else
+            repository.save(post);
+
     }
+
 
     @DeleteMapping("/posts/{id}")
-    public void deletePost(@PathVariable long id) {
+    public void deletePost(@PathVariable String id) {
+        Long ID = 0L;
         try {
-            if (getPostDetails(id) == null)
-                throw new RuntimeException(" Post not found with id " + id);
-
-        } catch (ArithmeticException e) {
-            System.out.println("Printing stack trace...");
-            e.printStackTrace(); // prints the stack trace
+            ID = Long.parseLong(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid input, added value is a string please enter positive integer");
         }
-        repository.deleteById(id);
-
-
+        if (getPostDetails(id) == null)
+            throw new RuntimeException(" Post not found with id " + id);
+        else
+            repository.deleteById(ID);
     }
+
 }
+
+

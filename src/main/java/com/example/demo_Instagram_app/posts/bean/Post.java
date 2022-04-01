@@ -35,4 +35,8 @@ public class Post {
         return "Post{" + "id=" + id + ", message='" + message + '\'' + '}';
     }
 
+    public void setId(long id) {
+        this.id=id;
+    }
+
 }
